@@ -12,14 +12,14 @@ body {
 /* Top bar */
 
 #nav_top {
-	z-index:1;
+	z-index:2;
 	background:rgba(255,255,255,0.9);
 	position:absolute;
 	width:100%;
+	/*width:calc(100% - 240px);*/
 	height:auto;
 	top:0;
 	left:0;
-	border-top:2px solid blue;
 	box-shadow:0 0 1px 1px rgba(0,0,0,0.25);
 }
 #nav_top .float {
@@ -27,7 +27,7 @@ body {
 	display:inline-block;
 	margin:0;
 	box-sizing:border-box;
-	margin:0 12px;
+	margin:0 18px 0 0;
 	padding:18px 0 0;
 }
 #nav_top .float span {
@@ -40,8 +40,10 @@ body {
 	letter-spacing:0.5px;
 	text-align:center;
 	text-transform:uppercase;
-	margin:13px 12px 0;
-	padding:6px;
+	/*margin:13px 15px 0;*/
+	width:240px;
+	/*margin:0 15px 0 0;*/
+	padding:20px 0 18px;
 	cursor:default;
 }
 #nav_top .float#title span {
@@ -67,7 +69,20 @@ body {
 	height:100%;
 }
 
+/* Sidebar */
 
+#sidebar {
+	z-index:1;
+	position:absolute;
+	background:rgba(155,155,155,0.5);
+	height:100%;
+	/*height:calc(100% - 54px);*/
+	width:240px;
+	left:0;
+	top:0;
+	background:1px solid rgba(155,155,155,0.8);
+	/*border-left:1px solid #3399ff;*/
+}
 
 
 
@@ -181,7 +196,7 @@ svg {
 /*	Sidebar
 	------------------------------- */
 
-#sidebar {
+/*#sidebar {
 	position:absolute;
 	right:3%;
 	top:6%;
@@ -283,12 +298,12 @@ svg {
 #nav_auth .journey span.focus {
 	color:#333;
 	font-weight:bold;
-	}
+	}*/
 
 /*	Legend
 	------------------------------- */
 
-#nav_legend {
+/*#nav_legend {
 	opacity:0;
 	background:transparent;
 	height:90px;
@@ -316,7 +331,7 @@ svg {
 	stroke:#666;
 	stroke-width:0.5;
 	stroke-opacity:0.75;
-	}
+	}*/
 
 /*	Date slider
 	------------------------------- */

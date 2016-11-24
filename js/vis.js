@@ -173,7 +173,8 @@ var init = function(){
 			map.exit().remove();
 
 			self.generate_lines();
-			self.generate_points(self.generate_legend);
+			self.generate_points();
+			// self.generate_points(self.generate_legend);
 
 			self.updateSidebar();
 		},
