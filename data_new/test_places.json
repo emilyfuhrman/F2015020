@@ -1,0 +1,32 @@
+{
+    "Basse-Pointe, Martinique": {
+        "Lat": 14.86954,
+        "Long": -61.11504,
+        "PlaceID": "basse-pointe_martinique"
+    },
+    "Berlin, Germany": {
+        "Lat": 52.52437,
+        "Long": 13.41053,
+        "PlaceID": "berlin_germany"
+    },
+    "Havana, Cuba": {
+        "Lat": 23.13302,
+        "Long": -82.38304,
+        "PlaceID": "havana_cuba"
+    },
+    "Miami, United States": {
+        "Lat": 25.79065,
+        "Long": -80.13005,
+        "PlaceID": "miami_united-states"
+    },
+    "New York City, United States": {
+        "Lat": 40.71427,
+        "Long": -74.00597,
+        "PlaceID": "new-york-city_united-states"
+    },
+    "Paris, France": {
+        "Lat": 48.85341,
+        "Long": 2.3488,
+        "PlaceID": "paris_france"
+    }
+}
