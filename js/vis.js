@@ -232,14 +232,20 @@ class CreateMap {
 							py = p[1];
 					return 'translate(' +px +',' +py +')';
 				});
-			points_g.exit().remove();
+			points_g.exit()
+				.select('circle.point')
+				.transition()
+				.attr('r',0)
+				.remove();
 			points = points_g.selectAll('circle.point')
 				.data(function(d){ return [d]; });
 			points.enter().append('circle')
-				.classed('point',true);
+				.classed('point',true)
+				.attr('r',0);
 			points
 				.attr('cx',0)
 				.attr('cy',0)
+				.transition()
 				.attr('r',function(d){
 					return d.value.length*4;
 				});
