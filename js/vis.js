@@ -5,6 +5,7 @@ class CreateMap {
 		this.data = {};
 
 		this.itineraries = {};
+		this.trajectories = {};
 		this.intersections = {};
 		this.places = {};
 		this.authors = {};
@@ -62,10 +63,21 @@ class CreateMap {
 		var self = this;
 		
 		self.itineraries = self.data.itineraries;
-		self.intersections = self.data.intersections;
-		self.places = self.data.places;
 		self.authors = self.data.author_ids;
 		self.continents = self.data.continents;
+
+		//places
+		d3.keys(self.data.places).forEach(function(d){
+			var k = d.split(',');
+			k[0] = k[0].trim().split(' ').join('-');
+			k[1] = k[1].trim().split(' ').join('-');
+			k = k.join('_').toLowerCase();
+			self.places[k] = self.data.places[d];
+		});
+
+		//intersections and trajectories
+		self.intersections = self.data.intersections;
+		self.trajectories = {};
 	}
 
 	setup(){
@@ -127,6 +139,8 @@ class CreateMap {
 				self.date_end = scale_value_converter(v_2);
 
 				update_datebar();
+			})
+			.on('slideend',function(evt,value){
 				update();
 			});
 
@@ -143,17 +157,22 @@ class CreateMap {
 
 		var slider = d3.select('#slider .slider_body').call(slide);
 		d3.selectAll('#slider .slider_body .tick').last().style('display','none');
+		
+		update_datebar();
 
 		//map
-		self.projection = d3.geo.mercator()
+		var projection = d3.geo.mercator()
 			.scale(220)
 			.translate([self.width*0.5,self.height*0.6])
 			;
-
-		self.path = d3.geo.path().projection(self.projection);
+		var path = d3.geo.path().projection(projection);
 
 		var features = topojson.feature(self.continents,self.continents.objects.continents);
-		var points,
+		var intersections,
+				trajectories;
+		var points_g,
+				points,
+				
 				lines;
 
 		//draw vector map
@@ -163,14 +182,35 @@ class CreateMap {
 		map.enter().append('path')
 			.classed('map',true);
 		map
-			.attr('d',self.path)
+			.attr('d',path)
 			;
 		map.exit().remove();
 
-		function update_datebar(){
-			var f = d3.time.format('%b. %Y');
-			d3.select('#date_start').html(f(self.date_start));
-			d3.select('#date_end').html(f(self.date_end));
+		function filter_data(){
+
+			//clear object
+			intersections = {};
+
+			//INTERSECTIONS
+			//filter by date range
+			var holder = d3.entries(self.intersections).filter(function(d){
+				var n = new Date(d.key);
+				return n >=self.date_start && n <=self.date_end;
+			});
+			//get distinct places
+			//slot author IDs into place
+			holder.forEach(function(d){
+				if(d3.keys(d.value).length >0){
+					d3.keys(d.value).forEach(function(_d){
+						if(!intersections[_d]){ intersections[_d] = []; }
+						d.value[_d].forEach(function(__d){
+							if(intersections[_d].indexOf(__d.AuthorID) <0){
+								intersections[_d].push(__d.AuthorID);
+							}
+						});
+					});
+				}
+			});
 		}
 
 		function generate_lines(){
@@ -178,27 +218,49 @@ class CreateMap {
 		}
 
 		function generate_points(){
-
-			points = self.svg.selectAll('circle.point')
-				.data(self.intersections);
+			points_g = self.svg.selectAll('g.points_g')
+				.data(d3.entries(intersections));
+			points_g.enter().append('g')
+				.classed('points_g',true);
+			points_g
+				.attr('transform',function(d){
+					var p  = projection([
+								self.places[d.key].Long,
+								self.places[d.key].Lat
+							]),
+							px = p[0],
+							py = p[1];
+					return 'translate(' +px +',' +py +')';
+				});
+			points_g.exit().remove();
+			points = points_g.selectAll('circle.point')
+				.data(function(d){ return [d]; });
 			points.enter().append('circle')
 				.classed('point',true);
 			points
 				.attr('cx',0)
 				.attr('cy',0)
-				.attr('r',0)
+				.attr('r',function(d){
+					return d.value.length*4;
+				});
 			points.exit().remove();
 		}
 
-		function update(){
-
+		function update_datebar(){
+			var f = d3.time.format('%b. %Y');
+			d3.select('#date_start').html(f(self.date_start));
+			d3.select('#date_end').html(f(self.date_end));
 		}
 
-		update_datebar();
+		function update(){
+			filter_data();
+			generate_lines();
+			generate_points();
+		}
+
+		filter_data();
 		generate_lines();
 		generate_points();
-
-		// self.updateSidebar();
 	}
 
 	generate_routes(){

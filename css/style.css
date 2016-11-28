@@ -9,6 +9,14 @@ body {
 	padding:0;
 }
 
+svg {
+	display:block;
+	width:100%;
+	height:100%;
+	shape-rendering:geometricPrecision;
+	cursor:pointer;
+}
+
 .b {
 	font-weight:bold;
 }
@@ -20,7 +28,6 @@ body {
 	background:rgba(255,255,255,0.9);
 	position:absolute;
 	width:100%;
-	/*width:calc(100% - 240px);*/
 	height:auto;
 	top:0;
 	left:0;
@@ -44,9 +51,7 @@ body {
 	letter-spacing:0.5px;
 	text-align:center;
 	text-transform:uppercase;
-	/*margin:13px 15px 0;*/
 	width:276px;
-	/*margin:0 15px 0 0;*/
 	padding:20px 0 18px;
 	cursor:default;
 }
@@ -69,11 +74,8 @@ body {
 #nav_top #date_display {
 	background:#eee;
 	float:right;
-	color:#444;
+	color:#3399ff;
 	font-size:11px;
-	/*font-style:italic;*/
-	/*text-align:right;*/
-	/*text-transform:uppercase;*/
 	width:138px;
 	margin:0;
 	padding:15px 9px;
@@ -99,12 +101,9 @@ body {
 
 #sidebar {
 	height:100%;
-	/*height:calc(100% - 54px);*/
 	width:276px;
 	left:0;
 	top:0;
-	/*border-right:1px solid rgba(155,155,155,0.8);*/
-	/*border-left:1px solid #3399ff;*/
 }
 
 #slider {
@@ -136,23 +135,7 @@ body {
 	display:none;
 }
 
-
-
-
-
-
-
-
-
-
-
-svg {
-	display:block;
-	width:100%;
-	height:100%;
-	shape-rendering:geometricPrecision;
-	cursor:pointer;
-	}
+/* Map */
 
 .map {
 	fill:#ddd;
@@ -160,7 +143,27 @@ svg {
 	stroke-width:0;
 	stroke-opacity:0;
 	stroke-linejoin:miter;
-	}
+}
+
+.pointG {
+	cursor:pointer;
+}
+.point {
+	fill:#3399ff;
+	stroke:#3399ff;
+	stroke-width:0.5;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 .tt {
 	font-size:10px;
@@ -171,15 +174,6 @@ svg {
 	opacity:1;
 	}
 
-.pointG {
-	cursor:pointer;
-	}
-
-.marker {
-	fill:#3399ff;
-	stroke:#3399ff;
-	stroke-width:0.5;
-	}
 
 .points_MonthSpec,
 .points_YearSpec {
@@ -245,160 +239,6 @@ svg {
 	stroke:red;
 	}*/
 
-/*	Sidebar
-	------------------------------- */
-
-/*#sidebar {
-	position:absolute;
-	right:3%;
-	top:6%;
-	width:260px;
-	height:auto;
-	background:transparent;
-	}
-
-.block {
-	float:left;
-	height:25px;
-	width:100%;
-	background:white;
-	padding-top:12px;
-	box-shadow:0 0 0.5px 0.5px #ddd;
-	}
-.block.half {
-	margin-top:6px;
-	}
-.block span {
-	float:left;
-	font-size:13px;
-	padding-left:9px;
-	box-sizing:border-box;
-	}
-
-#nav_place {
-	color:#111;
-	font-style:italic;
-	margin-top:6px;
-	border-radius:0;
-	}
-
-#nav_tabcontrol {
-	padding:0;
-	}
-#nav_tabcontrol .btn {
-	background:#f8f8f8;
-	float:left;
-	display:inline-block;
-	color:#999;
-	font-size:10px;
-	text-transform:uppercase;
-	letter-spacing:0.5px;
-	width:50%;
-	margin:0;
-	padding:7px 9px 5px;
-	cursor:pointer;
-	}
-#nav_tabcontrol .btn:first-child {
-	border-right:1px solid #eee;
-	}
-#nav_tabcontrol .btn.selected_tab {
-	background:white;
-	color:#111;
-	}
-
-#nav_auth {
-	opacity:0;
-	background:white;
-	height:375px;
-	padding-top:0;
-	overflow:scroll;
-	}
-#nav_auth input {
-	float:left;
-	margin-left:9px;
-	}
-#nav_auth span {
-    font-size: 10px;
-	}
-#nav_auth .auth_div:first-child {
-	margin-top:0;
-	border:none;
-	}
-#nav_auth .auth_div {
-	float:left;
-	width:100%;
-	margin:0;
-	padding:6px 0;
-	border-top:1px solid #eee;
-	}
-#nav_auth .auth_name {
-	width:100%;
-    font-weight: bold;
-	text-transform: uppercase;
-    letter-spacing: 0.5px;
-	}
-#nav_auth .auth_desc {
-	float:left;
-	color:#aaa;
-	margin-top:0;
-	}
-#nav_auth .journey span {
-	display:block;
-	margin:0;
-	padding-left:0;
-	}
-#nav_auth .journey span.focus {
-	color:#333;
-	font-weight:bold;
-	}*/
-
-/*	Legend
-	------------------------------- */
-
-/*#nav_legend {
-	opacity:0;
-	background:transparent;
-	height:90px;
-	border-bottom:1px solid #ddd;
-	box-shadow:none;
-	pointer-events:none;
-	}
-
-#nav_legend span {
-	color:#3399ff;
-	font-size:10px;
-	font-weight:bold;
-	text-transform:uppercase;
-	letter-spacing:0.5px;
-	}
-#nav_legend circle {
-	stroke-opacity:1;
-	}
-
-#nav_legend .legendLabel {
-	font-size:10px;
-	}
-#nav_legend .legendTrajectory {
-	fill:none;
-	stroke:#666;
-	stroke-width:0.5;
-	stroke-opacity:0.75;
-	}*/
-
-/*	Date slider
-	------------------------------- */
-
-#time-range {
-    z-index:1000;
-	position:absolute;
-    bottom:6%;
-    width:94%;
-    right:3%;
-	}
-#time-range p {
-    font-size:14px;
-    color:#333;
-	}
 
 /*	Author colors
 	------------------------------- */
