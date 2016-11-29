@@ -162,6 +162,8 @@ class CreateMap {
 				self.date_start = scale_value_converter(v_1);
 				self.date_end = scale_value_converter(v_2);
 
+				focus = false;
+
 				update_datebar();
 				update();
 			})
@@ -376,7 +378,7 @@ class CreateMap {
 		function generate_sidebar(){
 			var o_scale = d3.scale.linear()
 				.domain([0,3])
-				.range([0,1]);
+				.range([0.5,1]);
 
 			if(focus){
 				d3.select('#sidebar_title').html('&#8618;&nbsp;' +self.places[focus.key].PlaceName);
@@ -387,6 +389,9 @@ class CreateMap {
 				items.enter().append('li')
 					.classed('item',true);
 				items
+					.attr('class',function(d,i){
+						return 'item id_' +i;
+					})
 					.style('opacity',function(d){
 						return o_scale(d.value);
 					})

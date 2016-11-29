@@ -150,6 +150,9 @@ svg {
 	letter-spacing:1px;
 	text-transform:uppercase;
 }
+#sidebar .sidebar_item#sidebar_items li {
+	padding:3px 0;
+}
 
 #slider {
 	height:100%;
@@ -214,6 +217,36 @@ svg {
 	fill-opacity:1;
 	stroke-opacity:1;
 }
+
+/* Colors */
+
+.id_0 {
+	fill:#1f78b4;
+	color:#1f78b4;
+}
+path.id_0 {
+	stroke:#1f78b4;
+}
+
+.id_1 {
+	fill:#b2df8a;
+	color:#b2df8a;
+}
+path.id_1 {
+	stroke:#b2df8a;
+}
+
+/*
+#a6cee3
+#1f78b4
+#b2df8a
+#33a02c
+#fb9a99
+#e31a1c
+#fdbf6f
+#ff7f00
+#cab2d6
+*/
 
 
 
