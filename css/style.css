@@ -153,7 +153,18 @@ svg {
 	stroke:#3399ff;
 	stroke-width:0.5;
 }
-
+.point.point_01 {
+	fill-opacity:0.25;
+	stroke-opacity:0.25;
+}
+.point.point_02 {
+	fill-opacity:0.5;
+	stroke-opacity:0.5;
+}
+.point.point_03 {
+	fill-opacity:1;
+	stroke-opacity:1;
+}
 
 
 

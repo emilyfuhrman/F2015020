@@ -25,6 +25,8 @@ class CreateMap {
 		this.date_end = this.range[1];
 
 		this.mode = d3.select('#_01').classed('selected') ? 1 : 2;
+
+		this.ttime = 120;
 	}
 
 	loading_manager(_elem){
@@ -139,6 +141,7 @@ class CreateMap {
 				self.date_end = scale_value_converter(v_2);
 
 				update_datebar();
+				update();
 			})
 			.on('slideend',function(evt,value){
 				update();
@@ -162,8 +165,8 @@ class CreateMap {
 
 		//map
 		var projection = d3.geo.mercator()
-			.scale(220)
-			.translate([self.width*0.5,self.height*0.6])
+			.scale(180)
+			.translate([self.width*0.55,self.height*0.65])
 			;
 		var path = d3.geo.path().projection(projection);
 
@@ -171,7 +174,9 @@ class CreateMap {
 		var intersections,
 				trajectories;
 		var points_g,
-				points,
+				points_03,
+				points_02,
+				points_01,
 				
 				lines;
 
@@ -199,13 +204,14 @@ class CreateMap {
 			});
 			//get distinct places
 			//slot author IDs into place
+			//highest likelihood score wins
 			holder.forEach(function(d){
 				if(d3.keys(d.value).length >0){
 					d3.keys(d.value).forEach(function(_d){
-						if(!intersections[_d]){ intersections[_d] = []; }
+						if(!intersections[_d]){ intersections[_d] = {}; }
 						d.value[_d].forEach(function(__d){
-							if(intersections[_d].indexOf(__d.AuthorID) <0){
-								intersections[_d].push(__d.AuthorID);
+							if(!intersections[_d][__d.AuthorID] || intersections[_d][__d.AuthorID] >__d.Likelihood){
+								intersections[_d][__d.AuthorID] = __d.Likelihood;
 							}
 						});
 					});
@@ -218,6 +224,8 @@ class CreateMap {
 		}
 
 		function generate_points(){
+			var r_factor = 4;
+
 			points_g = self.svg.selectAll('g.points_g')
 				.data(d3.entries(intersections));
 			points_g.enter().append('g')
@@ -232,24 +240,96 @@ class CreateMap {
 							py = p[1];
 					return 'translate(' +px +',' +py +')';
 				});
+			points_g
+				.on('mousemove',function(d){
+					d3.select(this)
+						.transition()
+						.duration(self.ttime)
+						.attr('transform',function(_d){
+							var p  = projection([
+										self.places[_d.key].Long,
+										self.places[_d.key].Lat
+									]),
+									px = p[0],
+									py = p[1];
+							return 'translate(' +px +',' +py +')scale(1.5)';
+						});
+				})
+				.on('mouseout',function(d){
+					d3.select(this)
+						.transition()
+						.duration(self.ttime)
+						.attr('transform',function(_d){
+							var p  = projection([
+										self.places[_d.key].Long,
+										self.places[_d.key].Lat
+									]),
+									px = p[0],
+									py = p[1];
+							return 'translate(' +px +',' +py +')scale(1)';
+						});
+				});
 			points_g.exit()
-				.select('circle.point')
-				.transition()
-				.attr('r',0)
+				// .selectAll('circle.point')
+				// .transition()
+				// .duration(self.ttime)
+				// .attr('r',0)
+				// .style('fill-opacity',0)
 				.remove();
-			points = points_g.selectAll('circle.point')
-				.data(function(d){ return [d]; });
-			points.enter().append('circle')
+
+			//least certain
+			points_01 = points_g.selectAll('circle.point_01')
+				.data(function(d){ return [d3.values(d.value).filter(function(_d){return _d === 1;})]; },function(d){ return d.AuthorID; });
+			points_01.enter().append('circle')
+				.classed('point_01',true)
+				// .attr('r',0)
+				;
+			points_01
 				.classed('point',true)
-				.attr('r',0);
-			points
 				.attr('cx',0)
 				.attr('cy',0)
-				.transition()
+				// .transition()
+				// .duration(self.ttime)
 				.attr('r',function(d){
-					return d.value.length*4;
+					return d.length*r_factor;
 				});
-			points.exit().remove();
+			points_01.exit().remove();
+				
+			//certain
+			points_02 = points_g.selectAll('circle.point_02')
+				.data(function(d){return [d3.values(d.value).filter(function(_d){return _d === 2;})]; },function(d){ return d.AuthorID; });
+			points_02.enter().append('circle')
+				.classed('point_02',true)
+				// .attr('r',0)
+				;
+			points_02
+				.classed('point',true)
+				.attr('cx',0)
+				.attr('cy',0)
+				// .transition()
+				// .duration(self.ttime)
+				.attr('r',function(d){
+					return d.length*r_factor;
+				});
+			points_02.exit().remove();
+				
+			//most certain
+			points_03 = points_g.selectAll('circle.point_03')
+				.data(function(d){ return [d3.values(d.value).filter(function(_d){return _d === 3;})]; },function(d){ return d.AuthorID; });
+			points_03.enter().append('circle')
+				.classed('point_03',true)
+				// .attr('r',0)
+				;
+			points_03
+				.classed('point',true)
+				.attr('cx',0)
+				.attr('cy',0)
+				// .transition()
+				// .duration(self.ttime)
+				.attr('r',function(d){
+					return d.length*r_factor;
+				});
+			points_03.exit().remove();
 		}
 
 		function update_datebar(){
