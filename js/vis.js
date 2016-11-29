@@ -26,7 +26,7 @@ class CreateMap {
 
 		this.mode = d3.select('#_01').classed('selected') ? 1 : 2;
 
-		this.ttime = 120;
+		this.ttime = 45;
 	}
 
 	loading_manager(_elem){
@@ -65,7 +65,6 @@ class CreateMap {
 		var self = this;
 		
 		self.itineraries = self.data.itineraries;
-		self.authors = self.data.author_ids;
 		self.continents = self.data.continents;
 
 		//places
@@ -75,7 +74,13 @@ class CreateMap {
 			k[1] = k[1].trim().split(' ').join('-');
 			k = k.join('_').toLowerCase();
 			self.places[k] = self.data.places[d];
+			self.places[k].PlaceName = d;
 		});
+
+		//authors
+		d3.keys(self.data.author_ids).forEach(function(k){
+			self.authors[self.data.author_ids[k]] = k;
+		})
 
 		//intersections and trajectories
 		self.intersections = self.data.intersections;
@@ -112,10 +117,16 @@ class CreateMap {
 
 	generate_map(){
 		var self = this;
+		var focus = false;
 		var sidebar_tabs = d3.selectAll('.sidebar_tab'),
 				sidebar_mode = 1;
 
 		//click handlers
+		self.svg.on('click',function(d){
+			d3.event.stopPropagation();
+			focus = false;
+			generate_sidebar();
+		});
 		sidebar_tabs.on('click',function(d){
 			var elem = d3.select(this);
 			sidebar_tabs.classed('selected',false);
@@ -185,6 +196,7 @@ class CreateMap {
 		var intersections,
 				trajectories;
 		var points_g,
+				points_backs,
 				points_03,
 				points_02,
 				points_01,
@@ -219,10 +231,13 @@ class CreateMap {
 			holder.forEach(function(d){
 				if(d3.keys(d.value).length >0){
 					d3.keys(d.value).forEach(function(_d){
-						if(!intersections[_d]){ intersections[_d] = {}; }
+						if(!intersections[_d]){ 
+							intersections[_d] = {}; 
+							intersections[_d].figures = {}; 
+						}
 						d.value[_d].forEach(function(__d){
-							if(!intersections[_d][__d.AuthorID] || intersections[_d][__d.AuthorID] >__d.Likelihood){
-								intersections[_d][__d.AuthorID] = __d.Likelihood;
+							if(!intersections[_d].figures[__d.AuthorID] || intersections[_d].figures[__d.AuthorID] >__d.Likelihood){
+								intersections[_d].figures[__d.AuthorID] = __d.Likelihood;
 							}
 						});
 					});
@@ -230,9 +245,10 @@ class CreateMap {
 			});
 			//tally up totals
 			d3.keys(intersections).forEach(function(d){
-				intersections[d]._01 = d3.values(intersections[d]).filter(function(_d){ return _d === 1; });
-				intersections[d]._02 = d3.values(intersections[d]).filter(function(_d){ return _d === 2; });
-				intersections[d]._03 = d3.values(intersections[d]).filter(function(_d){ return _d === 3; });
+				intersections[d].lists = {};
+				intersections[d].lists._01 = d3.values(intersections[d].figures).filter(function(_d){ return _d === 1; });
+				intersections[d].lists._02 = d3.values(intersections[d].figures).filter(function(_d){ return _d === 2; });
+				intersections[d].lists._03 = d3.values(intersections[d].figures).filter(function(_d){ return _d === 3; });
 			});
 		}
 
@@ -245,7 +261,7 @@ class CreateMap {
 			//scale for radii
 			var r_scale = d3.scale.linear()
 				.domain([0,10])
-				.range([0,30]);
+				.range([0,45]);
 
 			points_g = self.svg.selectAll('g.points_g')
 				.data(d3.entries(intersections));
@@ -279,7 +295,7 @@ class CreateMap {
 				.on('mouseout',function(d){
 					d3.select(this)
 						.transition()
-						.duration(self.ttime)
+						.duration(self.ttime/2)
 						.attr('transform',function(_d){
 							var p  = projection([
 										self.places[_d.key].Long,
@@ -289,66 +305,67 @@ class CreateMap {
 									py = p[1];
 							return 'translate(' +px +',' +py +')scale(1)';
 						});
+				})
+				.on('click',function(d){
+					d3.event.stopPropagation();
+					focus = d;
+					generate_sidebar();
 				});
-			points_g.exit()
-				// .selectAll('circle.point')
-				// .transition()
-				// .duration(self.ttime)
-				// .attr('r',0)
-				// .style('fill-opacity',0)
-				.remove();
+			points_g.exit().remove();
+
+			//circlebacks (most certain size)
+			points_backs = points_g.selectAll('circle.point_back')
+				.data(function(d){ return [d.value.lists._03]; });
+			points_backs.enter().append('circle')
+				.classed('point_back',true);
+			points_backs
+				.attr('cx',0)
+				.attr('cy',0)
+				.attr('r',function(d){
+					var r_tot = d.length;
+					return r_scale(r_tot);
+				});
+			points_backs.exit().remove();
 
 			//least certain
 			points_01 = points_g.selectAll('circle.point_01')
-				.data(function(d){ return [d.value._01]; });
+				.data(function(d){ return [d.value.lists._01]; });
 			points_01.enter().append('circle')
-				.classed('point_01',true)
-				// .attr('r',0)
-				;
+				.classed('point_01',true);
 			points_01
 				.classed('point',true)
 				.attr('cx',0)
 				.attr('cy',0)
-				// .transition()
-				// .duration(self.ttime)
 				.attr('r',function(d){
-					var r_tot = d.length +this.parentNode.__data__.value._02.length +this.parentNode.__data__.value._03.length;
+					var r_tot = d.length +this.parentNode.__data__.value.lists._02.length +this.parentNode.__data__.value.lists._03.length;
 					return r_scale(r_tot);
 				});
 			points_01.exit().remove();
 				
 			//certain
 			points_02 = points_g.selectAll('circle.point_02')
-				.data(function(d){ return [d.value._02]; });
+				.data(function(d){ return [d.value.lists._02]; });
 			points_02.enter().append('circle')
-				.classed('point_02',true)
-				// .attr('r',0)
-				;
+				.classed('point_02',true);
 			points_02
 				.classed('point',true)
 				.attr('cx',0)
 				.attr('cy',0)
-				// .transition()
-				// .duration(self.ttime)
 				.attr('r',function(d){ 
-					var r_tot = d.length +this.parentNode.__data__.value._03.length;
+					var r_tot = d.length +this.parentNode.__data__.value.lists._03.length;
 					return r_scale(r_tot);
 				});
 			points_02.exit().remove();
 				
 			//most certain
 			points_03 = points_g.selectAll('circle.point_03')
-				.data(function(d){ return [d.value._03]; });
+				.data(function(d){ return [d.value.lists._03]; });
 			points_03.enter().append('circle')
-				.classed('point_03',true)
-				// .attr('r',0)
-				;
+				.classed('point_03',true);
 			points_03
 				.classed('point',true)
 				.attr('cx',0)
 				.attr('cy',0)
-				// .transition()
-				// .duration(self.ttime)
 				.attr('r',function(d){
 					var r_tot = d.length;
 					return r_scale(r_tot);
@@ -357,7 +374,31 @@ class CreateMap {
 		}
 
 		function generate_sidebar(){
+			var o_scale = d3.scale.linear()
+				.domain([0,3])
+				.range([0,1]);
 
+			if(focus){
+				d3.select('#sidebar_title').html('&#8618;&nbsp;' +self.places[focus.key].PlaceName);
+
+				var items;
+				items = d3.select('#sidebar_items').selectAll('li.item')
+					.data(d3.entries(focus.value.figures));
+				items.enter().append('li')
+					.classed('item',true);
+				items
+					.style('opacity',function(d){
+						return o_scale(d.value);
+					})
+					.html(function(d){
+						return self.authors[d.key];
+					});
+				items.exit().remove();
+
+			} else{
+				d3.select('#sidebar_title').html('');
+				d3.select('#sidebar_items').html('');
+			}
 		}
 
 		function update_datebar(){

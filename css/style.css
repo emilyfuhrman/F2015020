@@ -128,8 +128,27 @@ svg {
 	border-right:2px solid white;
 }
 #sidebar .sidebar_tab.selected {
-	background:white;
+	background:transparent;
 	color:#222;
+}
+#sidebar .sidebar_item {
+	float:left;
+	width:100%;
+	font-size:14px;
+	list-style-type:none;
+	padding:6px 18px;
+	box-sizing:border-box;
+}
+#sidebar .sidebar_item#sidebar_title {
+	color:#aaa;
+	font-style:italic;
+	padding-top:24px;
+}
+#sidebar .sidebar_item#sidebar_items {
+	font-weight:bold;
+	font-size:11px;
+	letter-spacing:1px;
+	text-transform:uppercase;
 }
 
 #slider {
@@ -178,6 +197,10 @@ svg {
 	fill:#3399ff;
 	stroke:#3399ff;
 	stroke-width:0.5;
+}
+.point_back {
+	fill:transparent;
+	stroke:transparent;
 }
 .point.point_01 {
 	fill-opacity:0.25;
