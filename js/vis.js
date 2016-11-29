@@ -112,6 +112,17 @@ class CreateMap {
 
 	generate_map(){
 		var self = this;
+		var sidebar_tabs = d3.selectAll('.sidebar_tab'),
+				sidebar_mode = 1;
+
+		//click handlers
+		sidebar_tabs.on('click',function(d){
+			var elem = d3.select(this);
+			sidebar_tabs.classed('selected',false);
+			elem.classed('selected',true);
+			sidebar_mode = +elem.attr('id').split('_')[1];
+			generate_sidebar();
+		});
 
 		//slider
 		var scale = d3.time.scale()
@@ -217,6 +228,12 @@ class CreateMap {
 					});
 				}
 			});
+			//tally up totals
+			d3.keys(intersections).forEach(function(d){
+				intersections[d]._01 = d3.values(intersections[d]).filter(function(_d){ return _d === 1; });
+				intersections[d]._02 = d3.values(intersections[d]).filter(function(_d){ return _d === 2; });
+				intersections[d]._03 = d3.values(intersections[d]).filter(function(_d){ return _d === 3; });
+			});
 		}
 
 		function generate_lines(){
@@ -224,7 +241,11 @@ class CreateMap {
 		}
 
 		function generate_points(){
-			var r_factor = 4;
+
+			//scale for radii
+			var r_scale = d3.scale.linear()
+				.domain([0,10])
+				.range([0,30]);
 
 			points_g = self.svg.selectAll('g.points_g')
 				.data(d3.entries(intersections));
@@ -279,7 +300,7 @@ class CreateMap {
 
 			//least certain
 			points_01 = points_g.selectAll('circle.point_01')
-				.data(function(d){ return [d3.values(d.value).filter(function(_d){return _d === 1;})]; },function(d){ return d.AuthorID; });
+				.data(function(d){ return [d.value._01]; });
 			points_01.enter().append('circle')
 				.classed('point_01',true)
 				// .attr('r',0)
@@ -291,13 +312,14 @@ class CreateMap {
 				// .transition()
 				// .duration(self.ttime)
 				.attr('r',function(d){
-					return d.length*r_factor;
+					var r_tot = d.length +this.parentNode.__data__.value._02.length +this.parentNode.__data__.value._03.length;
+					return r_scale(r_tot);
 				});
 			points_01.exit().remove();
 				
 			//certain
 			points_02 = points_g.selectAll('circle.point_02')
-				.data(function(d){return [d3.values(d.value).filter(function(_d){return _d === 2;})]; },function(d){ return d.AuthorID; });
+				.data(function(d){ return [d.value._02]; });
 			points_02.enter().append('circle')
 				.classed('point_02',true)
 				// .attr('r',0)
@@ -308,14 +330,15 @@ class CreateMap {
 				.attr('cy',0)
 				// .transition()
 				// .duration(self.ttime)
-				.attr('r',function(d){
-					return d.length*r_factor;
+				.attr('r',function(d){ 
+					var r_tot = d.length +this.parentNode.__data__.value._03.length;
+					return r_scale(r_tot);
 				});
 			points_02.exit().remove();
 				
 			//most certain
 			points_03 = points_g.selectAll('circle.point_03')
-				.data(function(d){ return [d3.values(d.value).filter(function(_d){return _d === 3;})]; },function(d){ return d.AuthorID; });
+				.data(function(d){ return [d.value._03]; });
 			points_03.enter().append('circle')
 				.classed('point_03',true)
 				// .attr('r',0)
@@ -327,9 +350,14 @@ class CreateMap {
 				// .transition()
 				// .duration(self.ttime)
 				.attr('r',function(d){
-					return d.length*r_factor;
+					var r_tot = d.length;
+					return r_scale(r_tot);
 				});
 			points_03.exit().remove();
+		}
+
+		function generate_sidebar(){
+
 		}
 
 		function update_datebar(){
@@ -342,11 +370,13 @@ class CreateMap {
 			filter_data();
 			generate_lines();
 			generate_points();
+			generate_sidebar();
 		}
 
 		filter_data();
 		generate_lines();
 		generate_points();
+		generate_sidebar();
 	}
 
 	generate_routes(){
@@ -368,6 +398,9 @@ class CreateMap {
 		
 		this.svg.selectAll("*").remove();
 		d3.select('#slider .slider_body').selectAll('*').remove();
+		
+		d3.selectAll('.sidebar_tab.selected').classed('selected',false);
+		d3.select('.sidebar_tab#sidebar_01').classed('selected',true);
 
 		d3.selectAll('._0' +opp).style('display','none');
 		d3.selectAll('._0' +this.mode).style('display','block');

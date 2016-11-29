@@ -48,7 +48,7 @@ svg {
 	background:#3399ff;
 	color:white;
 	font-size:13px;
-	letter-spacing:0.5px;
+	letter-spacing:1px;
 	text-align:center;
 	text-transform:uppercase;
 	width:276px;
@@ -104,6 +104,32 @@ svg {
 	width:276px;
 	left:0;
 	top:0;
+	border-right:2px solid white;
+	box-sizing:border-box;
+}
+#sidebar .sidebar_tab {
+	float:left;
+	display:block;
+	background:#eee;
+	color:#aaa;
+	width:50%;
+	height:30px;
+  font-size:11px;
+  font-weight:bold;
+  text-align:center;
+  text-transform:uppercase;
+  letter-spacing:1px;
+	margin-top:54px;
+	padding:15px 15px 30px;
+	box-sizing:border-box;
+	cursor:pointer;
+}
+#sidebar .sidebar_tab:first-child {
+	border-right:2px solid white;
+}
+#sidebar .sidebar_tab.selected {
+	background:white;
+	color:#222;
 }
 
 #slider {
