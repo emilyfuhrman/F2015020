@@ -151,7 +151,11 @@ svg {
 	text-transform:uppercase;
 }
 #sidebar .sidebar_item#sidebar_items li {
-	padding:3px 0;
+	padding:6px 0;
+}
+#sidebar .sidebar_item#sidebar_items li .item_date {
+	color:#aaa;
+	font-weight:normal;
 }
 
 #slider {
@@ -193,8 +197,14 @@ svg {
 	stroke-linejoin:miter;
 }
 
-.pointG {
+.points_g {
 	cursor:pointer;
+}
+.points_g.focus_point .point {
+	fill:#33cbff;
+	stroke:#33cbff;
+	stroke-width:1;
+	stroke-opacity:1;
 }
 .point {
 	fill:#3399ff;
@@ -203,6 +213,7 @@ svg {
 }
 .point_back {
 	fill:white;
+	fill-opacity:0.5;
 	stroke:transparent;
 }
 .point.point_01 {
