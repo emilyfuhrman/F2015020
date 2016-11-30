@@ -80,10 +80,12 @@ class CreateMap {
 		//authors
 		d3.keys(self.data.author_ids).forEach(function(k){
 			self.authors[self.data.author_ids[k]] = k;
-		})
+		});
 
-		//intersections and trajectories
+		//intersections
 		self.intersections = self.data.intersections;
+
+		//trajectories
 		self.trajectories = {};
 	}
 
@@ -190,7 +192,7 @@ class CreateMap {
 		//map
 		var projection = d3.geo.mercator()
 			.scale(180)
-			.translate([self.width*0.55,self.height*0.65])
+			.translate([self.width*0.5,self.height*0.65])
 			;
 		var path = d3.geo.path().projection(projection);
 
@@ -203,6 +205,7 @@ class CreateMap {
 				points_02,
 				points_01,
 				
+				lines_g,
 				lines;
 
 		//draw vector map
@@ -218,8 +221,9 @@ class CreateMap {
 
 		function filter_data(){
 
-			//clear object
+			//clear objects
 			intersections = {};
+			trajectories = {};
 
 			//INTERSECTIONS
 			//filter by date range
@@ -252,10 +256,70 @@ class CreateMap {
 				intersections[d].lists._02 = d3.values(intersections[d].figures).filter(function(_d){ return _d === 2; });
 				intersections[d].lists._03 = d3.values(intersections[d].figures).filter(function(_d){ return _d === 3; });
 			});
+
+			//TRAJECTORIES
+			holder.forEach(function(d){
+				d3.keys(d.value).forEach(function(_d){
+					d.value[_d].forEach(function(__d){
+						if(!trajectories[__d.AuthorID]){ trajectories[__d.AuthorID] = []; }
+						if(trajectories[__d.AuthorID].filter(function(t){ return t.PlaceID === __d.PlaceID && t.EndDate === __d.EndDate; }).length === 0){
+							trajectories[__d.AuthorID].push(__d);
+						}
+					});
+				});
+			});
+			//pair up start and end points
+			var tier = 0;
+			for(var i=0; i<d3.keys(trajectories).length; i++){
+				for(var j=0; j<trajectories[d3.keys(trajectories)[i]].length -1; j++){
+					trajectories[d3.keys(trajectories)[i]][j].PlaceID_End = trajectories[d3.keys(trajectories)[i]][j+1].PlaceID;
+					trajectories[d3.keys(trajectories)[i]][j].tier = tier;
+					tier+=2;
+				} 
+			}
 		}
 
 		function generate_lines(){
 
+			lines_g = self.svg.selectAll('g.lines_g')
+				.data(d3.entries(trajectories));
+			lines_g.enter().append('g')
+				.classed('lines_g',true);
+			lines_g
+				.attr('class',function(d){
+					return 'lines_g id_' +d3.keys(self.authors).indexOf(d.key);
+				});
+			lines_g.exit().remove();
+
+			lines = lines_g.selectAll('path.line')
+				.data(function(d){ return d.value.filter(function(_d){ return _d.PlaceID_End; }); });
+			lines.enter().append('path')
+				.classed('line',true);
+			lines
+				.attr('d',function(d){
+					var source = {},
+							target = {};
+
+					//isolate x and y start coordinates using projection
+					source = projection([
+						self.places[d.PlaceID].Long,
+						self.places[d.PlaceID].Lat
+					]);
+
+					//isolate x and y end coordinates using projection
+					target = projection([
+						self.places[d.PlaceID_End].Long,
+						self.places[d.PlaceID_End].Lat
+					]);
+
+					//this is a path builder -- creates a curved line between points
+					//src: http://stackoverflow.com/questions/13455510/curved-line-on-d3-force-directed-tree
+					var dx = target[0] -source[0],
+							dy = target[1] -source[1],
+							dr = Math.sqrt((dx +d.tier) * (dx +d.tier) + (dy +d.tier) * (dy +d.tier));
+					return 'M' + source[0] + ',' + source[1] + 'A' + dr + ',' + dr + ' 0 0,1 ' + target[0] + ',' + target[1];
+				});
+			lines.exit().remove();
 		}
 
 		function generate_points(){
@@ -383,9 +447,10 @@ class CreateMap {
 			if(focus){
 				d3.select('#sidebar_title').html('&#8618;&nbsp;' +self.places[focus.key].PlaceName);
 
+				var data = sidebar_mode === 1 ? d3.entries(focus.value.figures) : d3.entries(focus.value.figures);
 				var items;
 				items = d3.select('#sidebar_items').selectAll('li.item')
-					.data(d3.entries(focus.value.figures));
+					.data(data);
 				items.enter().append('li')
 					.classed('item',true);
 				items

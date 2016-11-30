@@ -96,7 +96,7 @@ svg {
 ._01 .control {
 	z-index:1;
 	position:absolute;
-	background:rgba(255,255,255,0.8);
+	background:rgba(255,255,255,0.9);
 }
 
 #sidebar {
@@ -202,7 +202,7 @@ svg {
 	stroke-width:0.5;
 }
 .point_back {
-	fill:transparent;
+	fill:white;
 	stroke:transparent;
 }
 .point.point_01 {
@@ -218,21 +218,29 @@ svg {
 	stroke-opacity:1;
 }
 
+path.line {
+	stroke-width:1;
+}
+
 /* Colors */
 
 .id_0 {
-	fill:#1f78b4;
-	color:#1f78b4;
+	fill:#fb9a99;
+	color:#fb9a99;
 }
+.id_0 path,
 path.id_0 {
-	stroke:#1f78b4;
+	fill:none;
+	stroke:#fb9a99;
 }
 
 .id_1 {
 	fill:#b2df8a;
 	color:#b2df8a;
 }
+.id_1 path,
 path.id_1 {
+	fill:none;
 	stroke:#b2df8a;
 }
 
@@ -247,108 +255,3 @@ path.id_1 {
 #ff7f00
 #cab2d6
 */
-
-
-
-
-
-
-
-
-
-
-
-.tt {
-	font-size:10px;
-	opacity:0;
-	pointer-events:none;
-	}
-.tt.visible {
-	opacity:1;
-	}
-
-
-.points_MonthSpec,
-.points_YearSpec {
-	fill-opacity:0;
-	}
-
-.points_YearSpec {
-	stroke-opacity:0.25;
-	stroke-dasharray:0.5,0.5;
-	}
-
-.points_MonthSpec {
-	stroke-opacity:0.5;
-	}
-
-.pointBack {
-	fill-opacity:1;
-	fill:white;
-	stroke-opacity:1;
-	stroke:white;
-	}
-
-.point {
-	fill-opacity:1;
-	stroke-opacity:1;
-	}
-.hov .point,
-.selected .point {
-	fill:#007fff;
-	fill-opacity:1;
-	stroke:#007fff;
-	}
-.hov .points_MonthSpec,
-.selected .points_MonthSpec {
-	stroke:#007fff;
-	stroke-opacity:0.75;
-	}
-.hov .points_YearSpec,
-.selected .points_YearSpec {
-	stroke:#007fff;
-	stroke-opacity:0.5;
-	}
-
-.trajectoriesG {
-	pointer-events:none;
-	}
-.trajectory {
-	fill:none !important;
-	stroke:#3399ff;
-	stroke-width:0.5;
-	stroke-opacity:0.5;
-	pointer-events:none;
-	}
-.trajectory.hov ,
-.trajectory.selected {
-	/*stroke:#007fff;*/
-	stroke-opacity:1;
-	}
-.trajectory.hov {
-	stroke-width:0.75;
-	}
-/*.trajectory.tier {
-	stroke:red;
-	}*/
-
-
-/*	Author colors
-	------------------------------- */
-
-.rdepestre {
-	fill:#66c2a5;
-	color:#66c2a5;
-	}
-path.rdepestre {
-	stroke:#66c2a5;
-	}
-
-.acesaire {
-	fill:#fc8d62;
-	color:#fc8d62;
-	}
-
-path.acesaire {
-	stroke:#fc8d62;
-	}
