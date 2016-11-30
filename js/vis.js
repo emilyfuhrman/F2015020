@@ -198,15 +198,13 @@ class CreateMap {
 		var features = topojson.feature(self.continents,self.continents.objects.continents);
 		var intersections,
 				intersections_unique,
-
-				trajectories;
-
+				trajectories,
+				trajectories_unique;
 		var points_g,
 				points_backs,
 				points_03,
 				points_02,
 				points_01,
-				
 				lines_g,
 				lines;
 
@@ -227,6 +225,7 @@ class CreateMap {
 			intersections = {};
 			intersections_unique = {};
 			trajectories = {};
+			trajectories_unique = {};
 
 			//INTERSECTIONS
 			//filter by date range
@@ -287,10 +286,21 @@ class CreateMap {
 			for(var i=0; i<d3.keys(trajectories).length; i++){
 				for(var j=0; j<trajectories[d3.keys(trajectories)[i]].length -1; j++){
 					trajectories[d3.keys(trajectories)[i]][j].PlaceID_End = trajectories[d3.keys(trajectories)[i]][j+1].PlaceID;
+					trajectories[d3.keys(trajectories)[i]][j].Likelihood_End = trajectories[d3.keys(trajectories)[i]][j+1].Likelihood;
 					trajectories[d3.keys(trajectories)[i]][j].tier = tier;
 					tier=(j%2)*10;
 				} 
 			}
+			//make list of unique trajectories per place
+			d3.keys(intersections).forEach(function(d){
+				if(!trajectories_unique[d]){ trajectories_unique[d] = []; }
+			});
+			d3.values(trajectories).forEach(function(d){
+				d.forEach(function(_d){
+					trajectories_unique[_d.PlaceID].push(_d);
+					if(_d.PlaceID_End){ trajectories_unique[_d.PlaceID_End].push(_d); }
+				});
+			});
 		}
 
 		function generate_lines(){
@@ -466,7 +476,7 @@ class CreateMap {
 			if(focus){
 				d3.select('#sidebar_title').html('&#8618;&nbsp;' +self.places[focus.key].PlaceName);
 
-				var data = sidebar_mode === 1 ? (intersections_unique[focus.key] || []) : d3.entries(focus.value.figures);
+				var data = sidebar_mode === 1 ? (intersections_unique[focus.key] || []) : (trajectories_unique[focus.key]);
 				var items_target = d3.select('#sidebar_items');
 				var items,
 						items_date;
@@ -494,7 +504,17 @@ class CreateMap {
 					.classed('item_date',true);
 				items_date
 					.html(function(d){
-						return d.StartDate && d.EndDate ? d.StartDate +'&nbsp;&ndash;&nbsp;' +d.EndDate : d.StartDate ? d.StartDate +'&nbsp;&ndash;' : d.EndDate ? '&nbsp;&ndash;' +d.EndDate : '';
+						var str;
+						if(sidebar_mode === 1){
+							str = d.StartDate && d.EndDate ? d.StartDate +'&nbsp;&ndash;&nbsp;' +d.EndDate : d.StartDate ? d.StartDate +'&nbsp;&ndash;' : d.EndDate ? '&nbsp;&ndash;' +d.EndDate : '';
+						} else{
+							var a1 = d.PlaceID === focus.key ? 'accent' : '',
+									a2 = d.PlaceID_End && d.PlaceID_End === focus.key ? 'accent' : '';
+							var p1 = '<span class="_' +d.Likelihood +' ' +a1 +'">' +self.places[d.PlaceID].PlaceName +'</span>',
+									p2 = '<span class="_' +d.Likelihood_End +' ' +a2 +'">' +(d.PlaceID_End ? self.places[d.PlaceID_End].PlaceName : '') +'</span>';
+							str = '<div class="b">' +(d.EndDate || '') +'</div><div>' +p1 +'&nbsp;&rarr;&nbsp;' +p2 +'</div>';
+						}
+						return str;
 					});
 				items_date.exit().remove();
 

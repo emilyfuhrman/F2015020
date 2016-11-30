@@ -141,22 +141,50 @@ svg {
 }
 #sidebar .sidebar_item#sidebar_title {
 	color:#aaa;
+	/*color:#33cbff;*/
 	font-style:italic;
 	padding-top:24px;
 }
 #sidebar .sidebar_item#sidebar_items {
 	font-weight:bold;
-	font-size:11px;
+	font-size:13px;
 	letter-spacing:1px;
 	text-transform:uppercase;
+	height:80%;
+	height:calc(100% - 185px);
+	overflow-y:scroll;
 }
 #sidebar .sidebar_item#sidebar_items li {
 	padding:6px 0;
 }
 #sidebar .sidebar_item#sidebar_items li .item_date {
 	color:#aaa;
+	font-size:11px;
 	font-weight:normal;
+	/*text-transform:none;
+	letter-spacing:0;*/
 }
+#sidebar .sidebar_item#sidebar_items li .item_date span._1 {
+	color:#bebebe;
+}
+#sidebar .sidebar_item#sidebar_items li .item_date span._2 {
+	color:#b4b4b4;
+}
+#sidebar .sidebar_item#sidebar_items li .item_date span._3 {
+	color:#aaa;
+}
+/*#sidebar .sidebar_item#sidebar_items li .item_date span.accent {
+	color:#33cbff;
+}
+#sidebar .sidebar_item#sidebar_items li .item_date span._1.accent {
+	color:#47dfff;
+}
+#sidebar .sidebar_item#sidebar_items li .item_date span._2.accent {
+	color:#3dd5ff;
+}
+#sidebar .sidebar_item#sidebar_items li .item_date span._3.accent {
+	color:#33cbff;
+}*/
 
 #slider {
 	height:100%;
