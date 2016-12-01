@@ -12,7 +12,7 @@ body {
 svg {
 	display:block;
 	width:100%;
-	height:100%;
+	/*height:100%;*/
 	shape-rendering:geometricPrecision;
 	cursor:pointer;
 }
@@ -52,6 +52,7 @@ svg {
 	text-align:center;
 	text-transform:uppercase;
 	width:276px;
+	height:54px;
 	padding:20px 0 18px;
 	cursor:default;
 }
@@ -261,6 +262,39 @@ path.line {
 	stroke-width:1;
 }
 
+/* Routes */
+
+text.routes_labels {
+	font-size:18px;
+	font-weight:bold;
+	text-transform:uppercase;
+	letter-spacing:1px;
+	text-anchor:middle;
+}
+text.routes_points_labels {
+	font-size:11px;
+	letter-spacing:1px;
+	fill:#aaa;
+}
+line.routes_lines_bknd {
+	stroke:#ddd;
+	stroke-width:30;
+}
+line.routes_lines {
+	stroke-width:30;
+}
+line.routes_points {
+	stroke:#aaa;
+	stroke-width:1;
+	stroke-dasharray:1,1;
+}
+circle.routes_stops {
+	/*stroke:black;*/
+	fill:white;
+	stroke:#aaa;
+	stroke-width:2;
+}
+
 /* Colors */
 
 .id_0 {
@@ -268,7 +302,8 @@ path.line {
 	color:#fb9a99;
 }
 .id_0 path,
-path.id_0 {
+path.id_0,
+line.id_0 {
 	fill:none;
 	stroke:#fb9a99;
 }
@@ -278,7 +313,8 @@ path.id_0 {
 	color:#b2df8a;
 }
 .id_1 path,
-path.id_1 {
+path.id_1,
+line.id_1 {
 	fill:none;
 	stroke:#b2df8a;
 }
