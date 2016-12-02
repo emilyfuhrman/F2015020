@@ -50,7 +50,7 @@ class CreateMap {
 		datasets.forEach(function(d){ self.loading.push(d); });
 		datasets.forEach(function(d){
 
-			var filepath = 'data_new/three_' +d +'.json';
+			var filepath = 'data/three_' +d +'.json';
 
 			d3.json(filepath,function(e,_d){
 				if(!e){
