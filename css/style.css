@@ -294,6 +294,9 @@ circle.routes_stops {
 	stroke:#aaa;
 	stroke-width:2;
 }
+path.line {
+	fill:none;
+}
 
 /* Colors */
 
@@ -317,6 +320,17 @@ path.id_1,
 line.id_1 {
 	fill:none;
 	stroke:#b2df8a;
+}
+
+.id_2 {
+	fill:#cab2d6;
+	color:#cab2d6;
+}
+.id_2 path,
+path.id_2,
+line.id_2 {
+	fill:none;
+	stroke:#cab2d6;
 }
 
 /*

@@ -18,8 +18,8 @@ class CreateMap {
 		this.loading = [];
 
 		this.range = [
-			new Date(1900,1,1),
-			new Date(2000,1,1)
+			new Date(1890,1,1),
+			new Date(2010,1,1)
 		];
 		this.date_start = this.range[0];
 		this.date_end = this.range[1];
@@ -50,7 +50,7 @@ class CreateMap {
 		datasets.forEach(function(d){ self.loading.push(d); });
 		datasets.forEach(function(d){
 
-			var filepath = 'data_new/test_' +d +'.json';
+			var filepath = 'data_new/three_' +d +'.json';
 
 			d3.json(filepath,function(e,_d){
 				if(!e){
@@ -66,6 +66,7 @@ class CreateMap {
 		
 		self.continents = self.data.continents;
 
+		//WEAKPOINT ** fix later
 		//places
 		d3.keys(self.data.places).forEach(function(d){
 			var k = d.split(',');
@@ -201,7 +202,7 @@ class CreateMap {
 
 		//map
 		var projection = d3.geo.mercator()
-			.scale(180)
+			.scale(200)
 			.translate([self.width*0.5,self.height*0.65])
 			;
 		var path = d3.geo.path().projection(projection);
@@ -211,11 +212,14 @@ class CreateMap {
 				intersections_unique,
 				trajectories,
 				trajectories_unique;
-		var points_g,
+		var points_target,
+				points_g,
 				points_backs,
 				points_03,
 				points_02,
 				points_01,
+
+				lines_target,
 				lines_g,
 				lines;
 
@@ -308,6 +312,8 @@ class CreateMap {
 			});
 			d3.values(trajectories).forEach(function(d){
 				d.forEach(function(_d){
+					if(!trajectories_unique[_d.PlaceID]){ trajectories_unique[_d.PlaceID] = []; }
+					if(!trajectories_unique[_d.PlaceID_End]){ trajectories_unique[_d.PlaceID_End] = []; }
 					trajectories_unique[_d.PlaceID].push(_d);
 					if(_d.PlaceID_End){ trajectories_unique[_d.PlaceID_End].push(_d); }
 				});
@@ -316,7 +322,13 @@ class CreateMap {
 
 		function generate_lines(){
 
-			lines_g = self.svg.selectAll('g.lines_g')
+			lines_target = self.svg.selectAll('g.lines_target')
+				.data([self]);
+			lines_target.enter().append('g')
+				.classed('lines_target',true);
+			lines_target.exit().remove();
+
+			lines_g = lines_target.selectAll('g.lines_g')
 				.data(d3.entries(trajectories));
 			lines_g.enter().append('g')
 				.classed('lines_g',true);
@@ -334,17 +346,19 @@ class CreateMap {
 				.attr('d',function(d){
 					var source = {},
 							target = {};
+					var p_1 = d.PlaceID || d.PlaceID_End,
+							p_2 = d.PlaceID_End || d.PlaceID;
 
 					//isolate x and y start coordinates using projection
 					source = projection([
-						self.places[d.PlaceID].Long,
-						self.places[d.PlaceID].Lat
+						self.places[p_1].Long,
+						self.places[p_1].Lat
 					]);
-
+					// if(!self.places[p_2]){debugger;}
 					//isolate x and y end coordinates using projection
 					target = projection([
-						self.places[d.PlaceID_End].Long,
-						self.places[d.PlaceID_End].Lat
+						self.places[p_2].Long,
+						self.places[p_2].Lat
 					]);
 
 					//this is a path builder -- creates a curved line between points
@@ -362,7 +376,13 @@ class CreateMap {
 			//scale for radii
 			var r_scale = d3.scale.linear()
 				.domain([0,10])
-				.range([0,45]);
+				.range([0,36]);
+
+			points_target = self.svg.selectAll('g.points_target')
+				.data([self]);
+			points_target.enter().append('g')
+				.classed('points_target',true);
+			points_target.exit().remove();
 
 			points_g = self.svg.selectAll('g.points_g')
 				.data(d3.entries(intersections));
@@ -560,7 +580,7 @@ class CreateMap {
 
 	generate_routes(){
 		var self = this;
-		var visH = this.height*2;
+		var visH = this.height*6;
 		this.svg.attr('height',visH);
 
 		//translate days to distance
